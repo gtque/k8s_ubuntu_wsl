@@ -1,0 +1,16 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: local-dev-tls
+  namespace: cert-manager
+spec:
+  commonName: '*.[your.domain]'
+  secretName: local=dev-tls
+  issuerRef:
+    name: letsencrypt-dev
+    kind: Issuer
+  duration: 2160h0m0s
+  renewBefore: 360h0m0s
+  dnsNames:
+    - '*.[your.domain]'
+    - [your.domain]

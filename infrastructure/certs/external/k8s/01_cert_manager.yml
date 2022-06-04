@@ -1,0 +1,17 @@
+apiVersion: 'kubernetes-client.io/v1'
+kind: ExternalSecret
+metadata:
+  name: local-dev-tls
+  namespace: cert-manager
+spec:
+  backendType: secretsManager
+  data:
+    - key: "arn:aws:secretsmanager:<region>:<awsaccountid>:secret:ca-certs/<secret.name.1>/cert.pem"
+      name: "tls.crt"
+    - key: "arn:aws:secretsmanager:<region>:<awsaccountid>:secret:ca-certs/<secret.name.1>/privkey.pem"
+      name: "tls.key"
+  template:
+    metadata:
+      annotations:
+        replicator.v1.mittwald.de/replication-allowed: "true"
+        replicator.v1.mittwald.de/replication-allowed-namespaces: ingress,infrastructure,sso.*,dev.*,qa.*

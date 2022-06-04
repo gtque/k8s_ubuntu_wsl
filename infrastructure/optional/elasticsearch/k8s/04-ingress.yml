@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: "elasticsearch"
+  namespace: "infrastructure"
+  labels:
+    app.kubernetes.io/name: "elasticsearch"
+    app.kubernetes.io/managed-by: "local"
+    onedatascan.com/deployment-stage: "infrastructure"
+    app.kubernetes.io/version: "7.8.1"
+    app.kubernetes.io/component: "elasticsearch"
+    app.kubernetes.io/part-of: "infrastructure"
+spec:
+  rules:
+  - host: elasticsearch.local.dev
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: elasticsearch
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - elasticsearch.local.dev
+    secretName: local-dev-tls

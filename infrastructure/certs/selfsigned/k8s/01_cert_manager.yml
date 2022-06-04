@@ -1,0 +1,16 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: local-cert-ss
+  namespace: cert-manager
+spec:
+  commonName: '*.local.dev'
+  secretName: local-dev-tls
+  issuerRef:
+    name: selfsigned-issuer
+    kind: Issuer
+  duration: 2160h0m0s
+  renewBefore: 360h0m0s
+  dnsNames:
+    - '*.local.dev'
+    - local.dev

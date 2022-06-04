@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: "oracle"
+  namespace: "infrastructure"
+  labels:
+    app.kubernetes.io/name: "oracle"
+    app.kubernetes.io/managed-by: "local"
+    onedatascan.com/deployment-stage: "infrastructure"
+    app.kubernetes.io/version: "19.3.0.0"
+    app.kubernetes.io/component: "oracle"
+    app.kubernetes.io/part-of: "infrastructure"
+spec:
+  type: LoadBalancer
+  ports:
+  - name: oracle
+    port: 1521
+    protocol: TCP
+    targetPort: 1521
+  - name: emanager
+    port: 5500
+    protocol: TCP
+    targetPort: 5500
+  selector:
+    app.kubernetes.io/name: oracle
+    app.kubernetes.io/instance: oracle

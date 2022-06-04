@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: "postgres"
+  namespace: "infrastructure"
+  labels:
+    app.kubernetes.io/name: "postgres"
+    app.kubernetes.io/managed-by: "local"
+    onedatascan.com/deployment-stage: "infrastructure"
+    app.kubernetes.io/version: "13.7"
+    app.kubernetes.io/component: "postgres"
+    app.kubernetes.io/part-of: "infrastructure"
+spec:
+  replicas: 1
+  serviceName: "postgres"
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: "postgres"
+  template:
+    metadata:
+      annotations:
+        app.kubernetes.io/instance: "postgres"
+        app.kubernetes.io/name: "postgres"
+        app.kubernetes.io/managed-by: "local"
+        onedatascan.com/deployment-stage: "infrastructure"
+        app.kubernetes.io/version: "13.7"
+        app.kubernetes.io/component: "postgres"
+        app.kubernetes.io/part-of: "infrastructure"
+      labels:
+        app.kubernetes.io/instance: "postgres"
+        app.kubernetes.io/name: "postgres"
+        app.kubernetes.io/managed-by: "local"
+        onedatascan.com/deployment-stage: "infrastructure"
+        app.kubernetes.io/version: "13.7"
+        app.kubernetes.io/component: "postgres"
+        app.kubernetes.io/part-of: "infrastructure"
+    spec:
+      serviceAccountName: "postgres"
+      containers:
+      - name: app
+        image: postgres:13.7-bullseye
+        imagePullPolicy: "IfNotPresent"
+        env:
+        - name: POSTGRES_USER
+          value: "postgres"
+        - name: POSTGRES_PASSWORD
+          value: "password"
+        - name: DEV_USER
+          value: "partner"
+        - name: DEV_PASSWORD
+          value: "dev_pass"
+        - name: DEV_DB
+          value: "dev_db"
+        - name: DEV_SCHEMA
+          value: "dev_schema"
+        - name: TZ
+          value: "US/Eastern"
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+  - metadata:
+      annotations:
+        volume.alpha.kubernetes.io/storage-class: anything
+      name: "postgres-data"
+      namespace: "infrastructure"
+      labels:
+        app.kubernetes.io/instance: "postgres"
+        app.kubernetes.io/name: "postgres"
+        app.kubernetes.io/version: "13.7"
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "microk8s-hostpath"
+      resources:
+        requests:
+          storage: 5Gi

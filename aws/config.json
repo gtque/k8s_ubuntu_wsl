@@ -1,0 +1,6 @@
+{
+  "credHelpers": {
+    "public.ecr.aws": "ecr-login",
+    "path.ecr.aws": "ecr-login"
+  }
+}

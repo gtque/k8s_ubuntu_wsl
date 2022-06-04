@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: "oracle"
+  namespace: "infrastructure"
+  labels:
+    app.kubernetes.io/name: "oracle"
+    app.kubernetes.io/managed-by: "local"
+    onedatascan.com/deployment-stage: "infrastructure"
+    app.kubernetes.io/version: "19.3.0.0"
+    app.kubernetes.io/component: "oracle"
+    app.kubernetes.io/part-of: "infrastructure"
+spec:
+  replicas: 1
+  serviceName: "oracle"
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: "oracle"
+  template:
+    metadata:
+      annotations:
+        app.kubernetes.io/instance: "oracle"
+        app.kubernetes.io/name: "oracle"
+        app.kubernetes.io/managed-by: "local"
+        onedatascan.com/deployment-stage: "infrastructure"
+        app.kubernetes.io/version: "19.3.0.0"
+        app.kubernetes.io/component: "oracle"
+        app.kubernetes.io/part-of: "infrastructure"
+      labels:
+        app.kubernetes.io/instance: "oracle"
+        app.kubernetes.io/name: "oracle"
+        app.kubernetes.io/managed-by: "local"
+        onedatascan.com/deployment-stage: "infrastructure"
+        app.kubernetes.io/version: "19.3.0.0"
+        app.kubernetes.io/component: "oracle"
+        app.kubernetes.io/part-of: "infrastructure"
+    spec:
+      serviceAccountName: "oracle"
+      containers:
+      - name: app
+        image: container-registry.oracle.com/database/enterprise:19.3.0.0
+        imagePullPolicy: "IfNotPresent"
+        env:
+        - name: ORACLE_SID
+          value: "LOCORADEV01"
+        - name: ORACLE_PDB
+          value: "DEVPDB"
+        - name: ORACLE_PWD
+          value: "password"
+        - name: ORACLE_CHARACTERSET
+          value: "AL32UTF8"
+        - name: TZ
+          value: "America/New_York"
+        ports:
+        - containerPort: 1521
+        - containerPort: 5500
+        volumeMounts:
+        - name: oracle-data
+          mountPath: /opt/oracle/oradata
+        - name: oracle-tmp
+          mountPath: /tmp
+  volumeClaimTemplates:
+  - metadata:
+      annotations:
+        volume.alpha.kubernetes.io/storage-class: anything
+      name: "oracle-data"
+      namespace: "infrastructure"
+      labels:
+        app.kubernetes.io/instance: "oracle"
+        app.kubernetes.io/name: "oracle"
+        app.kubernetes.io/version: "19.3.0.0"
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "microk8s-hostpath"
+      resources:
+        requests:
+          storage: 5Gi
+  - metadata:
+      annotations:
+        volume.alpha.kubernetes.io/storage-class: anything
+      name: "oracle-tmp"
+      namespace: "infrastructure"
+      labels:
+        app.kubernetes.io/instance: "oracle"
+        app.kubernetes.io/name: "oracle"
+        app.kubernetes.io/version: "19.3.0.0"
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "microk8s-hostpath"
+      resources:
+        requests:
+          storage: 5Gi

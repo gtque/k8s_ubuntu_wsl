@@ -1,0 +1,17 @@
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: elasticsearch
+  namespace: infrastructure
+  labels:
+    app.kubernetes.io/name: "elasticsearch"
+    app.kubernetes.io/instance: "elasticsearch"
+    app.kubernetes.io/managed-by: "local"
+    onedatascan.com/deployment-stage: "infrastructure"
+    app.kubernetes.io/version: "7.8.1"
+    app.kubernetes.io/component: "elasticsearch"
+    app.kubernetes.io/part-of: "infrastructure"
+rules:
+  - apiGroups: [""]
+    resources: ["endpoints", "services", "pods", "deployments", "configmaps", "secrets"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]

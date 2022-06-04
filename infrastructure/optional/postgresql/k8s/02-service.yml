@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: "postgres"
+  namespace: "infrastructure"
+  labels:
+    app.kubernetes.io/name: "postgres"
+    app.kubernetes.io/managed-by: "local"
+    onedatascan.com/deployment-stage: "infrastructure"
+    app.kubernetes.io/version: "13.7"
+    app.kubernetes.io/component: "postgres"
+    app.kubernetes.io/part-of: "infrastructure"
+spec:
+  type: LoadBalancer
+  ports:
+  - name: postgres
+    port: 5432
+    protocol: TCP
+    targetPort: 5432
+  selector:
+    app.kubernetes.io/name: postgres
+    app.kubernetes.io/instance: postgres

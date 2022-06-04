@@ -1,0 +1,21 @@
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: elasticsearch
+  namespace: infrastructure
+  labels:
+    app.kubernetes.io/name: "elasticsearch"
+    app.kubernetes.io/instance: "elasticsearch"
+    app.kubernetes.io/managed-by: "local"
+    onedatascan.com/deployment-stage: "infrastructure"
+    app.kubernetes.io/version: "7.8.1"
+    app.kubernetes.io/component: "elasticsearch"
+    app.kubernetes.io/part-of: "infrastructure"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: "elasticsearch"
+subjects:
+- kind: ServiceAccount
+  name: "elasticsearch"
+  namespace: "infrastructure"
