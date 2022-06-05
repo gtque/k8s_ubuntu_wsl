@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "applying external secret managers..."
-kubectl apply -f /usr/local/bin/wsl-local-k8s/infrastructure/certs/external/k8s
+kubectl apply -f /usr/local/bin/k8s_ubuntu_wsl/infrastructure/certs/external/k8s
 
 #the bellow could be simplified to check for all the certs in the same loop but
 #i was lazy and just copied and pasted the code for now, because I just want it to work first.

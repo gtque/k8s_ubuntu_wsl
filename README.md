@@ -9,6 +9,11 @@ I may or may not update this walkthrough and scripts, but it likely won't be oft
 
 Pay attention to the steps, some require you editing the files before running or applying them for your particular usecase.
 
+If you have any issues running the scripts:
+* make sure the line endings are lf and not crlf
+* check the permissions and try to chmod them
+* try running use `sh <cmd>`
+
 Good Luck.
 
 ## Steps
@@ -33,8 +38,8 @@ Good Luck.
 3. Create a symbolic link to this project in the `/usr/local/bin` called k8s_ubuntu_wsl
    1. 
    ```
-   cd /mnt/c/[path/to/cloned]/k8s_ubuntu_wsl
-   sudo ln -s . /usr/local/bin/k8s_ubuntu_wsl
+   cd /usr/local/bin/
+   sudo ln -s /mnt/c/[path/to/cloned]/k8s_ubuntu_wsl k8s_ubuntu_wsl
    ```
 4. To save some grief:
    1. create symbolic links to your maven, gradle, aws and any other local configurations in the home directory of the user in use in the linux image installed.
@@ -225,6 +230,10 @@ This is templated to use route53 to verify ownership of the domain.
 1. edit `/usr/local/bin/k8s_ubuntu_wsl/infrastructure/certs/letsencrypt/k8s/02_cert_manager.yml`
   1. set [your.domain] to a domain you control
 1. `/usr/local/bin/k8s_ubuntu_wsl/infrastructure/certs/letsencrypt/setup.sh`
+
+## Optional
+Under `k8s_ubuntu_wsl/infrastructure` is a folder called `optional` this contains some third party services you may want running.
+So far this includes: elasticsearch, oracle (not tested completely), and postgresql
 
 ##### microk8s information
 1. To restart microk8s if your host system is stopped or wsl2 is restarted:

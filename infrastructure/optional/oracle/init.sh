@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "copying db_init sql files."
-kubectl -n infrastructure cp /usr/local/bin/wsl-local-k8s/infrastructure/optional/oracle/init/ oracle-0:/tmp
+kubectl -n infrastructure cp /usr/local/bin/k8s_ubuntu_wsl/infrastructure/optional/oracle/init/ oracle-0:/tmp
 echo "creating import dir"
 kubectl -n infrastructure exec -i oracle-0 -- mkdir /opt/oracle/oradata/import
 echo "setting up dev data tables"

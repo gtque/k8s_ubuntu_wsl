@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "applying the issuer and the cert..."
-kubectl apply -f /usr/local/bin/wsl-local-k8s/infrastructure/certs/letsencrypt/k8s
+kubectl apply -f /usr/local/bin/k8s_ubuntu_wsl/infrastructure/certs/letsencrypt/k8s
 
 export found="false"
 i=0

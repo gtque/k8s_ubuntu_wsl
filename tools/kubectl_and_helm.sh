@@ -9,11 +9,10 @@ curl "https://get.helm.sh/helm-v2.17.0-linux-amd64.tar.gz" -o "helm.tar.gz"
 tar -zxvf helm.tar.gz
 sudo mv linux-amd64/helm /usr/local/bin/helm2
 sudo mv linux-amd64/tiller /usr/local/bin/
-helm init
+helm2 init
 rm helm.tar.gz
 echo "installing helm v3 as helm"
 curl "https://get.helm.sh/helm-v3.6.3-linux-amd64.tar.gz" -o "helm.tar.gz"
 tar -zxvf helm.tar.gz
 sudo mv linux-amd64/helm /usr/local/bin/helm
-helm init
 rm helm.tar.gz

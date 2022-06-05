@@ -1,5 +1,5 @@
 #!/bin/bash
-/usr/local/bin/wsl-local-k8s/infrastructure/certs/setup.sh
-kubectl --v=0 apply -f /usr/local/bin/wsl-local-k8s/infrastructure/k8s
+/usr/local/bin/k8s_ubuntu_wsl/infrastructure/certs/setup.sh
+kubectl --v=0 apply -f /usr/local/bin/k8s_ubuntu_wsl/infrastructure/k8s
 
 

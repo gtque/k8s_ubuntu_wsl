@@ -21,8 +21,8 @@ curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip
 unzip awscliv2.zip
 sudo ./aws/install
 rm awscliv2.zip
-#/usr/local/bin/wsl-local-k8s/aws/aws_credhelper.sh
+#/usr/local/bin/k8s_ubuntu_wsl/aws/aws_credhelper.sh
 #microk8s config can't use the aws cred helper apparently so for now it we still have to use
 #docker login, edit the file below and then it.
-#/usr/local/bin/wsl-local-k8s/aws/aws_ecr_login.sh
+#/usr/local/bin/k8s_ubuntu_wsl/aws/aws_ecr_login.sh
 echo "finished, you can continue to the next step after closing and restarting wsl (powershel -> wsl --shutdown), which should be the docker setup"
