@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: pgadmin-cert
+  namespace: "infrastructure"
+  annotations:
+    replicator.v1.mittwald.de/replicate-from: cert-manager/local-dev-tls
+    app.kubernetes.io/name: "pgadmin"
+    app.kubernetes.io/managed-by: "local"
+    app.kubernetes.io/version: "6.10"
+    app.kubernetes.io/component: "postgres"
+    app.kubernetes.io/part-of: "infrastructure"
+type: kubernetes.io/tls
+data:
+  tls.key: ""
+  tls.crt: ""

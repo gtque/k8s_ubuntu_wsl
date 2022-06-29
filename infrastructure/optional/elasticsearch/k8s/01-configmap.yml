@@ -6,7 +6,6 @@ metadata:
   labels:
     app.kubernetes.io/name: "elasticsearch"
     app.kubernetes.io/managed-by: "local"
-    onedatascan.com/deployment-stage: "infrastructure"
     app.kubernetes.io/version: "7.8.1"
     app.kubernetes.io/component: "elasticsearch"
     app.kubernetes.io/part-of: "infrastructure"

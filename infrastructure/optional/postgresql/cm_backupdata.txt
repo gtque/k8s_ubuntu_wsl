@@ -1,0 +1,6 @@
+  POSTGRES_USER: "postgres"
+  POSTGRES_PASSWORD: "ch@ngm3"
+  DEV_USER: "dev"
+  DEV_PASSWORD: "iliketurtles"
+  DEV_DB: "dev_db"
+  DEV_SCHEMA: "dev_schema"

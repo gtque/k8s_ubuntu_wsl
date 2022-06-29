@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: "pgadmin"
+  namespace: "infrastructure"
+  labels:
+    app.kubernetes.io/name: "pgadmin"
+    app.kubernetes.io/managed-by: "local"
+    app.kubernetes.io/version: "6.10"
+    app.kubernetes.io/component: "postgres"
+    app.kubernetes.io/part-of: "infrastructure"
+spec:
+  replicas: 1
+  serviceName: "pgadmin"
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: "pgadmin"
+  template:
+    metadata:
+      annotations:
+        app.kubernetes.io/instance: "pgadmin"
+        app.kubernetes.io/name: "pgadmin"
+        app.kubernetes.io/managed-by: "local"
+        app.kubernetes.io/version: "6.10"
+        app.kubernetes.io/component: "postgres"
+        app.kubernetes.io/part-of: "infrastructure"
+      labels:
+        app.kubernetes.io/instance: "pgadmin"
+        app.kubernetes.io/name: "pgadmin"
+        app.kubernetes.io/managed-by: "local"
+        app.kubernetes.io/version: "6.10"
+        app.kubernetes.io/component: "postgres"
+        app.kubernetes.io/part-of: "infrastructure"
+    spec:
+      terminationGracePeriodSeconds: 10
+      serviceAccountName: "postgres"
+      containers:
+      - name: pgadmin
+        image: dpage/pgadmin4:6.10
+        imagePullPolicy: "IfNotPresent"
+        env:
+        - name: PGADMIN_DEFAULT_EMAIL
+          value: "youremail@domain.com"
+        - name: PGADMIN_DEFAULT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pgadmin
+              key: pgadmin-password
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        volumeMounts:
+        - name: pgadmin-data
+          mountPath: /var/lib/pgadmin
+  volumeClaimTemplates:
+  - metadata:
+      annotations:
+        volume.alpha.kubernetes.io/storage-class: anything
+      name: "pgadmin-data"
+      namespace: "infrastructure"
+      labels:
+        app.kubernetes.io/instance: "postgres"
+        app.kubernetes.io/name: "pgadmin"
+        app.kubernetes.io/version: "6.10"
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "microk8s-hostpath"
+      resources:
+        requests:
+          storage: 3Gi

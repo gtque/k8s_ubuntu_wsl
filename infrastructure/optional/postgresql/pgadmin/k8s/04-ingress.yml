@@ -1,27 +1,27 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: "elasticsearch"
+  name: "pgadmin"
   namespace: "infrastructure"
   labels:
-    app.kubernetes.io/name: "elasticsearch"
+    app.kubernetes.io/name: "pgadmin"
     app.kubernetes.io/managed-by: "local"
-    app.kubernetes.io/version: "7.8.1"
-    app.kubernetes.io/component: "elasticsearch"
+    app.kubernetes.io/version: "6.10"
+    app.kubernetes.io/component: "postgres"
     app.kubernetes.io/part-of: "infrastructure"
 spec:
   rules:
-  - host: elasticsearch.local.dev
+  - host: pgadmin.local.dev
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: elasticsearch
+            name: pgadmin
             port:
               number: 80
   tls:
   - hosts:
-    - elasticsearch.local.dev
-    secretName: local-dev-tls
+    - pgadmin.local.dev
+    secretName: pgadmin-cert

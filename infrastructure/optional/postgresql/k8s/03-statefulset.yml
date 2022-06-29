@@ -6,7 +6,6 @@ metadata:
   labels:
     app.kubernetes.io/name: "postgres"
     app.kubernetes.io/managed-by: "local"
-    onedatascan.com/deployment-stage: "infrastructure"
     app.kubernetes.io/version: "13.7"
     app.kubernetes.io/component: "postgres"
     app.kubernetes.io/part-of: "infrastructure"
@@ -22,7 +21,6 @@ spec:
         app.kubernetes.io/instance: "postgres"
         app.kubernetes.io/name: "postgres"
         app.kubernetes.io/managed-by: "local"
-        onedatascan.com/deployment-stage: "infrastructure"
         app.kubernetes.io/version: "13.7"
         app.kubernetes.io/component: "postgres"
         app.kubernetes.io/part-of: "infrastructure"
@@ -30,7 +28,6 @@ spec:
         app.kubernetes.io/instance: "postgres"
         app.kubernetes.io/name: "postgres"
         app.kubernetes.io/managed-by: "local"
-        onedatascan.com/deployment-stage: "infrastructure"
         app.kubernetes.io/version: "13.7"
         app.kubernetes.io/component: "postgres"
         app.kubernetes.io/part-of: "infrastructure"
@@ -44,11 +41,17 @@ spec:
         - name: POSTGRES_USER
           value: "postgres"
         - name: POSTGRES_PASSWORD
-          value: "password"
+          valueFrom:
+            secretKeyRef:
+              name: postgres
+              key: postgres-password
         - name: DEV_USER
-          value: "partner"
+          value: "dev"
         - name: DEV_PASSWORD
-          value: "dev_pass"
+          valueFrom:
+            secretKeyRef:
+              name: postgres
+              key: dev-password
         - name: DEV_DB
           value: "dev_db"
         - name: DEV_SCHEMA
