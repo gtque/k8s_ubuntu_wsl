@@ -36,21 +36,29 @@ Good Luck.
    1. actually open ubuntu once installed
    1. when prompted for username/password, use your username, you do not need to use the same host login password, this is not sync'ed to the host OS so set it to something easy for you remember
 3. Create a symbolic link to this project in the `/usr/local/bin` called k8s_ubuntu_wsl
-   1. 
+   1. make sure to replace `[path/to/cloned]` with the path to where ever you cloned this project
    ```
-   cd /usr/local/bin/
-   sudo ln -s /mnt/c/[path/to/cloned]/k8s_ubuntu_wsl k8s_ubuntu_wsl
+   sudo ln -s /mnt/c/[path/to/cloned]/k8s_ubuntu_wsl /usr/local/bin/k8s_ubuntu_wsl
    ```
-4. To save some grief:
+4. Edit the sudoers to remove the password request
+    ```
+   sudo visudo
+   ```
+   1. edit the sudo All line to look like the following:
+       ```
+        %sudo   ALL=(ALL:ALL) NOPASSWD: ALL
+       ```
+   1. press `ctrl+o` to save and then enter to actually save, then `ctrl+x` to exit, if prompted press `y` to save
+5. To save some grief:
    1. create symbolic links to your maven, gradle, aws and any other local configurations in the home directory of the user in use in the linux image installed.
       ```
       sudo ln -s /mnt/c/Users/<username>/.m2 ~/.m2
       sudo ln -s /mnt/c/Users/<username>/.gradle ~/.gradle
       sudo ln -s /mnt/c/Users/<username>/.aws ~/.aws
       ```
-5. I suggest creating a symbolic link in your `~` to your directory on your /mnt/c drive where you check out projects...
+6. I suggest creating a symbolic link in your `~` to your directory on your /mnt/c drive where you check out projects...
    1. sudo ln -s /mnt/c/<path-to-git-checkout-folder> ~/
-6. wsl hack for vpn client(s) 
+7. wsl hack for vpn client(s) 
    1. from power shell run: ipconfig /all 
    2. look for the entry for the VPN Client 
    3. copy the dns servers' ip addresses (may be 2)
@@ -60,13 +68,19 @@ Good Luck.
       nameserver XX.XXX.X.X
       nameserver XX.XXX.X.X
       ```
-7. close the terminal session and start a new one
+8. close the terminal session and start a new one
 ## Setting up the required and helpful utilities
 1. run `/usr/local/bin/k8s_ubuntu_wsl/tools/tool_config.sh`
    1. this installs: maven, net-tools, ansible, jq, yq, unzip, libjson-xs-perl, libxml-compile-perl, unzip, awscliv2
-2. close the terminal
+2. close the terminal and restart wsl ()
+   1. close the terminal session
+   2. run powershell as admin from host os
+   3. run: `wsl --shutdown`
+   4. open new Ubuntu/linux terminal
 3. open a new terminal session to continue.
-4. run `/usr/local/bin/k8s_ubuntu_wsl/tools/docker_install.sh`
+4. run docker install
+   1. On ubuntu 18 or 20: `/usr/local/bin/k8s_ubuntu_wsl/tools/docker_install.sh`
+   1. On ubuntu 24: `/usr/local/bin/k8s_ubuntu_wsl/tools/docker_install_jammy.sh`
    1. this will also install: apt-transport-https, ca-certificates, curl, software-properties-common
    1. enable buildkit
       1. you may have to sudo mkdir /etc/docker 
@@ -87,19 +101,10 @@ The following information is from:
     ```  
     sudo apt-get install -y daemonize
     ```
-3. Edit the sudoers to remove the password request
-    ```
-   sudo visudo
-   ```
-   1. edit the sudo All line to look like the following:
-       ```
-        %sudo   ALL=(ALL:ALL) NOPASSWD: ALL
-       ```
-   1. press `ctrl+o` to save and then enter to actually save, then `ctrl+x` to exit, if prompted press `y` to save
-4. run `/usr/local/bin/k8s_ubuntu_wsl/microk8s/systemd_config.sh`
-5. **exit and restart system (close the terminal window, open powershell and run wsl --shutdown)**
-6. run `/usr/local/bin/k8s_ubuntu_wsl/microk8s/systemd_resolved.sh`
-7. You are now ready to start setting up microk8s
+3. run `/usr/local/bin/k8s_ubuntu_wsl/microk8s/systemd_config.sh`
+4. **exit and restart system (close the terminal window, open powershell and run wsl --shutdown)**
+5. run `/usr/local/bin/k8s_ubuntu_wsl/microk8s/systemd_resolved.sh`
+6. You are now ready to start setting up microk8s
 ## install microk8s
 1. install microk8s by running: `/usr/local/bin/k8s_ubuntu_wsl/microk8s/microk8s_setup.sh`
 2. **Close/exit this session and start a new one (close the window/terminal)**

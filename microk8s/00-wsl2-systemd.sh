@@ -6,5 +6,5 @@ SYSTEMD_PID=$(ps -ef | grep '/lib/systemd/systemd --system-unit=basic.target$' |
 fi
 
 if [ -n "$SYSTEMD_PID" ] && [ "$SYSTEMD_PID" != "1" ]; then
-exec sudo /usr/bin/nsenter -t $SYSTEMD_PID -a su - $LOGNAME
+exec sudo /usr/bin/nsenter -t $SYSTEMD_PID -m -p su - $LOGNAME
 fi
