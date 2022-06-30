@@ -19,7 +19,7 @@ Good Luck.
 ## Steps
 1. Clone this project
 1. Configure WSL
-1. Install an Ubuntu image (tested with 18.04 and 2020.04)
+1. Install an Ubuntu image (tested with 18.04, 20.04, and 22.04)
 1. install helpful utilities (git, docker, jq, yq, ansible, etc...)
 1. configure and run daemonize
 1. install microk8s
