@@ -10,7 +10,6 @@ metadata:
     app.kubernetes.io/component: "postgres"
     app.kubernetes.io/part-of: "infrastructure"
 spec:
-  type: LoadBalancer
   ports:
   - name: postgres
     port: 5432
