@@ -31,16 +31,17 @@ Good Luck.
 
 ## install/enable WSL2
 1. Follow the manual installation steps: https://docs.microsoft.com/en-us/windows/wsl/install-win10#manual-installation-steps
-### install a (Ubuntu) linux image
-2. Install a linux image from the Windows Store, this assumes you are using ubuntu.
+
+### install a (Ubuntu) linux image (if `wsl --install` didn't install one for you)
+1. Install a linux image from the Windows Store, this assumes you are using ubuntu.
    1. actually open ubuntu once installed
-   1. when prompted for username/password, use your username, you do not need to use the same host login password, this is not sync'ed to the host OS so set it to something easy for you remember
-3. Create a symbolic link to this project in the `/usr/local/bin` called k8s_ubuntu_wsl
+   2. when prompted for username/password, use your username, you do not need to use the same host login password, this is not sync'ed to the host OS so set it to something easy for you remember
+2. Create a symbolic link to this project in the `/usr/local/bin` called k8s_ubuntu_wsl
    1. make sure to replace `[path/to/cloned]` with the path to where ever you cloned this project
    ```
    sudo ln -s /mnt/c/[path/to/cloned]/k8s_ubuntu_wsl /usr/local/bin/k8s_ubuntu_wsl
    ```
-4. Edit the sudoers to remove the password request
+3. Edit the sudoers to remove the password request
     ```
    sudo visudo
    ```
@@ -48,17 +49,17 @@ Good Luck.
        ```
         %sudo   ALL=(ALL:ALL) NOPASSWD: ALL
        ```
-   1. press `ctrl+o` to save and then enter to actually save, then `ctrl+x` to exit, if prompted press `y` to save
-5. To save some grief:
+   2. press `ctrl+o` to save and then enter to actually save, then `ctrl+x` to exit, if prompted press `y` to save
+4. To save some grief:
    1. create symbolic links to your maven, gradle, aws and any other local configurations in the home directory of the user in use in the linux image installed.
       ```
       sudo ln -s /mnt/c/Users/<username>/.m2 ~/.m2
       sudo ln -s /mnt/c/Users/<username>/.gradle ~/.gradle
       sudo ln -s /mnt/c/Users/<username>/.aws ~/.aws
       ```
-6. I suggest creating a symbolic link in your `~` to your directory on your /mnt/c drive where you check out projects...
+5. I suggest creating a symbolic link in your `~` to your directory on your /mnt/c drive where you check out projects...
    1. sudo ln -s /mnt/c/<path-to-git-checkout-folder> ~/
-7. wsl hack for vpn client(s) 
+6. wsl hack for vpn client(s) 
    1. from power shell run: ipconfig /all 
    2. look for the entry for the VPN Client 
    3. copy the dns servers' ip addresses (may be 2)
@@ -68,7 +69,21 @@ Good Luck.
       nameserver XX.XXX.X.X
       nameserver XX.XXX.X.X
       ```
-8. close the terminal session and start a new one
+7. enable systemd: 
+   1. edit `/etc/wsl.conf` as root
+      1. `sudo vi /etc/wsl.conf`
+   2. add: 
+      ```
+      [boot]
+      systemd=true
+      ```
+   3. save and close the changes.
+      1. `shift + :`
+      2. `wq`
+      3. `enter`
+8. close the terminal session and restart wsl and launch a new terminal 
+   1. from powershell run: `wsl --shutdown`
+
 ## Setting up the required and helpful utilities
 1. run `/usr/local/bin/k8s_ubuntu_wsl/tools/tool_config.sh`
    1. this installs: maven, net-tools, ansible, jq, yq, unzip, libjson-xs-perl, libxml-compile-perl, unzip, awscliv2
@@ -92,7 +107,12 @@ Good Luck.
    2. run powershell as admin from host os
    3. run: `wsl --shutdown`
    4. open new Ubuntu/linux terminal
+
 ## daemonize setup
+<details>
+<summary>Deprecated</summary>
+
+### just enable systemd in your linux install: https://devblogs.microsoft.com/commandline/systemd-support-is-now-available-in-wsl/
 The following information is from:
 * https://wsl.dev/wsl2-microk8s/
 * https://forum.snapcraft.io/t/running-snaps-on-wsl2-insiders-only-for-now/13033
@@ -105,6 +125,8 @@ The following information is from:
 4. **exit and restart system (close the terminal window, open powershell and run wsl --shutdown)**
 5. run `/usr/local/bin/k8s_ubuntu_wsl/microk8s/systemd_resolved.sh`
 6. You are now ready to start setting up microk8s
+</details>
+
 ## install microk8s
 1. install microk8s by running: `/usr/local/bin/k8s_ubuntu_wsl/microk8s/microk8s_setup.sh`
 2. **Close/exit this session and start a new one (close the window/terminal)**
