@@ -153,7 +153,8 @@ the wsl.conf file and configure the nameservers as described above under `wsl ha
 for more information see:
 * https://learn.microsoft.com/en-us/windows/wsl/wsl-config
 * https://learn.microsoft.com/en-us/windows/wsl/systemd
-Note: the following is not needed if you are using latest wsl2, as systemd can be enabled by default, if not, please do follow the steps to enable it.
+
+**Note: the following is not needed if you are using latest wsl2, as systemd can be enabled by default, if not, please do follow the steps to enable it.**
 1. add my default wsl.conf configuration by running: `usr/local/bin/k8s_ubuntu_wsl/wsl/wsl_config.sh`
 2. **exit and restart system (close the terminal window, open powershell and run wsl --shutdown)**
 ## install microk8s
