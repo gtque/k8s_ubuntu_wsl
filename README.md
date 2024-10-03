@@ -224,8 +224,9 @@ for more information see:
 8. **Close and restart the session**
 9. Continue with installing `Kubectl and Helm`.
 ## Kubectl and Helm and nfs
-1. run `/usr/local/bin/k8s_ubuntu_wsl/tools/kubectl_and_helm.sh`
-2. setup nfs run: `/usr/local/bin/k8s_ubuntu_wsl/ubuntu/nfs/setup.sh`
+1. for ubuntu 18, 20, and 22 run `/usr/local/bin/k8s_ubuntu_wsl/tools/kubectl_and_helm.sh`
+2. for ubuntu 24 run `/usr/local/bin/k8s_ubuntu_wsl/tools/kubectl_and_helm_jammy.sh`
+3. setup nfs run: `/usr/local/bin/k8s_ubuntu_wsl/ubuntu/nfs/setup.sh`
 ## configure any needed objects
 A few extra services need to be running in the kubernetes cluster to be more useful: cert-manager, kubernetes-replicator, secrets, ingress if not using the one provided by microk8s
 1. run `/usr/local/bin/k8s_ubuntu_wsl/infrastructure/setup.sh`
