@@ -1,0 +1,19 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: "thehangingpen-server"
+  namespace: "thehangingpen"
+  labels:
+    app.kubernetes.io/name: "thehangingpen-server"
+    app.kubernetes.io/managed-by: "thehangingpen"
+    app.kubernetes.io/version: "0.0.1"
+    app.kubernetes.io/component: "server"
+    app.kubernetes.io/part-of: "thehangingpen"
+data:
+  application-{{ release.stage|lower }}.yml: |
+    server:
+      port: 8080
+      servlet:
+        context-path: '/'
+    hello:
+        world: "Cheeks!"

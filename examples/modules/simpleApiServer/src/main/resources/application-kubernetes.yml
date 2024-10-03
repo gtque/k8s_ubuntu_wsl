@@ -1,0 +1,12 @@
+spring:
+  cloud:
+    kubernetes:
+      enabled: true
+      discovery:
+        enabled: true
+      reload:
+        enabled: true
+        monitoring-secrets: true
+      secrets:
+        enable-api: true
+        enabled: true

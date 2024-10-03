@@ -19,3 +19,7 @@ spec:
       protocol: TCP
       port: 443
       targetPort: 443
+    - name: ws
+      protocol: TCP
+      port: 8008
+      targetPort: 8085

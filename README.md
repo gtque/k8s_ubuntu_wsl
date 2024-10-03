@@ -18,14 +18,14 @@ Good Luck.
 
 ## Steps
 1. Clone this project
-1. Configure WSL
-1. Install an Ubuntu image (tested with 18.04, 20.04, and 22.04)
+1. Enable WSL
+1. Install an Ubuntu image (tested with 18.04, 20.04, and 22.04, 24.04)
 1. install helpful utilities (git, docker, jq, yq, ansible, etc...)
-1. configure and run daemonize
+1. Configure WSL
 1. install microk8s
 1. configure minimum microk8s things
 1. install kubectl and helm, best to do them after the cluster is up and running.
-1. configure any needed objects (ingress, cert-manager, etc...)
+1. configure any needed objects (gateway, cert-manager, etc...)
 1. install some other fun infrastructure pieces: elasticsearch, postgres, couchdb, (oracle), etc...
 1. build and deploy your project(s)
 
@@ -35,6 +35,20 @@ Good Luck.
 2. Install a linux image from the Windows Store, this assumes you are using ubuntu.
    1. actually open ubuntu once installed
    1. when prompted for username/password, use your username, you do not need to use the same host login password, this is not sync'ed to the host OS so set it to something easy for you remember
+   1. **IF YOU WISH TO MOVE THE DISTRO TO A DIFFERENT DRIVE I SUGGEST YOU DO IT NOW**
+       1. create a wsl\backups directory on the desired drive (it can be any name you want, but this is what I will use for the rest of the steps)
+       1. open powershell
+       1. stop wsl: `wsl --shutdown`
+       1. list the distros: `wsl --list`
+       1. export the distro you want to move, example: `wsl --export Ubuntu-24.04 D:\wsl\backups\ubuntu-24.04.tar`
+       1. unregister the distro to delete it from the original location: `wsl --unregister Ubuntu-24.04`
+       1. import it from the new location: `wsl --import Ubuntu-24.04 D:\wsl\distros\ubuntu-24.04 D:\wsl\backups\ubuntu-24.04.tar`
+       1. reset default user if need be:   
+          ```
+          cd %userprofile%\AppData\Local\Microsoft\WindowsApps            **(this is not needed if in path)**
+          ubuntu2404.exe config --default-user yourloginname`
+          ```
+      1. Launch/re-open the distro
 3. Create a symbolic link to this project in the `/usr/local/bin` called k8s_ubuntu_wsl
    1. make sure to replace `[path/to/cloned]` with the path to where ever you cloned this project
    ```
@@ -57,7 +71,7 @@ Good Luck.
       sudo ln -s /mnt/c/Users/<username>/.aws ~/.aws
       ```
 6. I suggest creating a symbolic link in your `~` to your directory on your /mnt/c drive where you check out projects...
-   1. sudo ln -s /mnt/c/<path-to-git-checkout-folder> ~/
+   1. sudo ln -s /mnt/c/<path-to-git-checkout-folder> ~/code
 7. wsl hack for vpn client(s) 
    1. from power shell run: ipconfig /all 
    2. look for the entry for the VPN Client 
@@ -68,11 +82,20 @@ Good Luck.
       nameserver XX.XXX.X.X
       nameserver XX.XXX.X.X
       ```
+   5. edit /etc/wsl.conf and set `generateResolvConf = false`
+      ```
+      sudo vi /etc/wsl.conf
+      press i
+      edit the generateResolvConf line and set it to false
+      press shift+:
+      press wq
+      press enter to save and close
+      ```
 8. close the terminal session and start a new one
 ## Setting up the required and helpful utilities
 1. run `/usr/local/bin/k8s_ubuntu_wsl/tools/tool_config.sh`
    1. this installs: maven, net-tools, ansible, jq, yq, unzip, libjson-xs-perl, libxml-compile-perl, unzip, awscliv2
-2. close the terminal and restart wsl ()
+2. **Close the session and restart WSL.**
    1. close the terminal session
    2. run powershell as admin from host os
    3. run: `wsl --shutdown`
@@ -80,7 +103,12 @@ Good Luck.
 3. open a new terminal session to continue.
 4. run docker install
    1. On ubuntu 18 or 20: `/usr/local/bin/k8s_ubuntu_wsl/tools/docker_install.sh`
-   1. On ubuntu 24: `/usr/local/bin/k8s_ubuntu_wsl/tools/docker_install_jammy.sh`
+   1. On ubuntu 22 or 24: `/usr/local/bin/k8s_ubuntu_wsl/tools/docker_install_jammy.sh`
+   1. **Close the session and restart WSL.**
+      1. close the terminal session
+      2. run powershell as admin from host os
+      3. run: `wsl --shutdown`
+      4. open new Ubuntu/linux terminal
    1. this will also install: apt-transport-https, ca-certificates, curl, software-properties-common
    1. enable buildkit
       1. you may have to sudo mkdir /etc/docker 
@@ -92,7 +120,16 @@ Good Luck.
    2. run powershell as admin from host os
    3. run: `wsl --shutdown`
    4. open new Ubuntu/linux terminal
-## daemonize setup
+## DEPRECATED: daemonize setup
+<details>
+
+# DO NOT DO THE FOLLOWING STEPS
+# THEY ARE NO LONGER NECESSARY 
+# PLEASE PROCEED TO CONFIGURE wsl.conf
+wsl2 now supports enabling systemd in the wsl.conf.
+
+the scripts for manually setting up systemd have been moved tp microk8s/deprecated for historical purposes but should not be used.
+
 The following information is from:
 * https://wsl.dev/wsl2-microk8s/
 * https://forum.snapcraft.io/t/running-snaps-on-wsl2-insiders-only-for-now/13033
@@ -105,6 +142,18 @@ The following information is from:
 4. **exit and restart system (close the terminal window, open powershell and run wsl --shutdown)**
 5. run `/usr/local/bin/k8s_ubuntu_wsl/microk8s/systemd_resolved.sh`
 6. You are now ready to start setting up microk8s
+
+</details>
+
+## Configuring wsl.conf
+some default wsl configurations, includes enabling systemd. If you are on a vpn, after this is run, you will want to edit
+the wsl.conf file and configure the nameservers as described above under `wsl hack for vpn client(s)`
+
+for more information see:
+* https://learn.microsoft.com/en-us/windows/wsl/wsl-config
+* https://learn.microsoft.com/en-us/windows/wsl/systemd
+1. add my default wsl.conf configuration by running: `usr/local/bin/k8s_ubuntu_wsl/wsl/wsl_config.sh`
+2. **exit and restart system (close the terminal window, open powershell and run wsl --shutdown)**
 ## install microk8s
 1. install microk8s by running: `/usr/local/bin/k8s_ubuntu_wsl/microk8s/microk8s_setup.sh`
 2. **Close/exit this session and start a new one (close the window/terminal)**
@@ -132,11 +181,13 @@ The following information is from:
         metrics-server: disabled
         istio: disabled
         ```
-4. Let's enable the DNS, storage, ingress, and registry
+4. Let's enable the DNS, storage, and registry
    ```
-   microk8s enable dns storage ingress registry
+   microk8s enable dns storage registry
    ```
-   1. ingress used by microk8s is nginx, to use ha-proxy, please see steps below on deploying ha proxy to the cluster.
+   1. You may choose to also add `ingress` to the list to enable microk8s' built ingress, but I strongly recommend using a gateway instead. 
+      1. ingress used by microk8s is nginx, to use ha-proxy, please see steps below on deploying ha proxy to the cluster.
+      1. gateway instructions are below under `Configure any needed objects`
 5. adding a loadbalancer
     1. if on microk8s >= 1.17 you can also enable metallb, otherwise we have to manually install it.
         ```
@@ -166,9 +217,7 @@ The following information is from:
           3. so set the range to something like: 172.21.16.175-172.21.16.225
 6. microk8s is up, running, and configured.
 7. Setup local kubeconfig: run `/usr/local/bin/k8s_ubuntu_wsl/microk8s/microk8s_kubeconfig.sh`
-    1. this edits the ~/.bashrc file so that `microk8s config > ~/.kube/config` is run everytime to make sure it is up to date. 
-    So if you run the microk8s_kubeconfig.sh multiple times, 
-    you will end up with multiple instances of the same command at the end of the .bashrc file.
+    1. this edits the ~/.bashrc file so that `microk8s config > ~/.kube/config` is run everytime to make sure it is up to date.
 8. **Close and restart the session**
 9. Continue with installing `Kubectl and Helm`.
 ## Kubectl and Helm and nfs
@@ -179,7 +228,14 @@ A few extra services need to be running in the kubernetes cluster to be more use
 1. run `/usr/local/bin/k8s_ubuntu_wsl/infrastructure/setup.sh`
    1. this does not install ingress, see the ingress section below if you want to use ha proxy instead of the nginx ingress provided by microk8s
    2. You may want to double-check the version first and check for a newer version. Be careful though, and test it thoroughly before committing a change to the `k8s_setup.sh` updating the cert-manager version.
-2. install ha-proxy if you aren't using the provide nginx ingress from microk8s
+2. install contour gateway
+   1. run `/usr/local/bin/k8s_ubuntu_wsl/infrastructure/optional/contour/setup.sh`
+   2. This is under optional, because while I strongly encourage moving to using a gateway instead of ingress,
+   it is up to you to decide which implementation you want to use, this is just what I have been using and is what the examples are using,
+   but setup for nginx-gateway are also provided if you want to go down that path.
+3. install ha-proxy if you must and if you aren't using the provide nginx ingress from microk8s, just know that it is strongly encouraged to use a gateway instead.
+   <details>
+   
    1. you are on your own, but I would suggest checking out their website and using helm if possible.
    2. coredns hosts override is recommended if using ha-proxy:
       2. kubectl -n kube-system edit cm coredns -o yaml
@@ -207,10 +263,14 @@ A few extra services need to be running in the kubernetes cluster to be more use
          172.21.18.223 local.somehost.com
          172.21.18.223 another.somehost.com
          ```
+   </details>
+
 #### Certificates
 There are no certs installed by the preceding steps. 
 There are several options for certs. 
 The easiest to get started with will be the self signed certs.
+but first:
+1. run `/usr/local/bin/k8s_ubuntu_wsl/infrastructure/certs/setup.sh`
 ###### SelfSigned
 The certs are defined for `*.local.dev` and `*.sso.local.dev`. Edit this if you want to use a different base url.
 1. `/usr/local/bin/k8s_ubuntu_wsl/infrastructure/certs/selfsigned/setup.sh`

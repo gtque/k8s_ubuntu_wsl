@@ -1,0 +1,56 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: thehangingpen-server
+  namespace: thehangingpen
+  labels:
+    app.kubernetes.io/instance: thehangingpen-server
+    app.kubernetes.io/name: "thehangingpen-server"
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: "thehangingpen-server"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: thehangingpen-server
+        app.kubernetes.io/name: "thehangingpen-server"
+        app.kubernetes.io/managed-by: "thehangingpen"
+        app.kubernetes.io/version: "dev"
+        app.kubernetes.io/component: "server"
+        app.kubernetes.io/part-of: "thehangingpen"
+      namespace: thehangingpen
+    spec:
+      serviceAccountName: thehangingpen-server
+      containers:
+      - name: app
+        image: localhost:32000/example-server:local
+        imagePullPolicy: Always
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "{{ release.stage|lower }}"
+        - name: SPRING_CLOUD_BOOTSTRAP_ENABLED
+          value: "true"
+        - name: SPRING_CLOUD_KUBERNETES_SECRETS_ENABLEAPI
+          value: "true"
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 20
+          timeoutSeconds: 15
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 20
+          timeoutSeconds: 15
+          successThreshold: 1
+          failureThreshold: 60

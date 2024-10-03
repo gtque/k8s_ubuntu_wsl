@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: "thehangingpen-server"
+  namespace: "thehangingpen"
+  labels:
+    app.kubernetes.io/name: "thehangingpen-server"
+    app.kubernetes.io/managed-by: "thehangingpen"
+    app.kubernetes.io/version: "0.0.1"
+    app.kubernetes.io/component: "server"
+    app.kubernetes.io/part-of: "thehangingpen"
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app.kubernetes.io/name: thehangingpen-server

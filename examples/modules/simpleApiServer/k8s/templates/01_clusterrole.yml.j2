@@ -1,0 +1,15 @@
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: "thehangingpen-server"
+  namespace: "thehangingpen"
+  labels:
+    app.kubernetes.io/name: "thehangingpen-server"
+    app.kubernetes.io/managed-by: "thehangingpen"
+    app.kubernetes.io/version: "0.0.1"
+    app.kubernetes.io/component: "server"
+    app.kubernetes.io/part-of: "thehangingpen"
+rules:
+  - apiGroups: [""]
+    resources: ["endpoints", "services", "pods", "deployments", "configmaps", "secrets"]
+    verbs: ["get", "list", "watch"]

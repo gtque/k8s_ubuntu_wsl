@@ -5,8 +5,8 @@ if [[ -n $microk8s_configured ]]; then
   exit 0
 fi
 echo "microk8s auto config will be added."
-echo "microk8s config > ~/.kube/config" >> ~/.bashrc
+#echo "microk8s config > ~/.kube/config" >> ~/.bashrc
 #have to make the dir: /var/snap/microk8s/common/var/lib/kubelet/
-sudo ln -s ~/.docker/config.json /var/snap/microk8s/common/var/lib/kubelet/
-echo "close the session and start a new one"
+#sudo ln -s ~/.docker/config.json /var/snap/microk8s/common/var/lib/kubelet/
+#echo "close the session and start a new one"
 #restart the computer on mac.

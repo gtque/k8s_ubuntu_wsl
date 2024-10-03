@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: thehangingpen-server
+  main:
+    allow-bean-definition-overriding: true
+  jackson:
+    default-property-inclusion: NON_NULL
+springdoc:
+  packages-to-scan: com.thegoate.examples.api
+  paths-to-match: /**
+
+server:
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+  port: 8082
+  servlet:
+    context-path: '/'
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, loggers, refresh
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: always
+
+logging:
+  pattern:
+    # These patterns are almost identical to Spring's default patterns except for the addition of the correlationId MDC parameter
+    # See https://github.com/spring-projects/spring-boot/blob/1e5611d02d88107ef2915f14d708401e9caa60db/spring-boot-project/spring-boot/src/main/resources/org/springframework/boot/logging/logback/defaults.xml
+    console: '%clr(%d{${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}}){faint} %clr(${LOG_LEVEL_PATTERN:%5p}) %clr(${PID: }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m [%X]%n${LOG_EXCEPTION_CONVERSION_WORD:%wEx}}'
+    file: '%d{${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}} ${LOG_LEVEL_PATTERN:%5p} ${PID: } --- [%t] %-40.40logger{39} : %m [%X]%n${LOG_EXCEPTION_CONVERSION_WORD:%wEx}}'
+
+project:
+  features:
+    api-documentation:
+      enabled: true
+
+hello:
+  world: "Pol Omer"

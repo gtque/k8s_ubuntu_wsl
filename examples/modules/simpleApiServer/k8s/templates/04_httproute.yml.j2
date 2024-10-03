@@ -1,0 +1,22 @@
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: HTTPRoute
+metadata:
+  name: thehangingpen-server
+  namespace: thehangingpen
+  labels:
+    app.kubernetes.io/instance: thehangingpen-server
+    app.kubernetes.io/name: "thehangingpen-server"
+spec:
+  parentRefs:
+  - name: thehangingpen
+  hostnames:
+  - "mylocalexample.tech"
+  - "www.mylocalexample.tech"
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+  - backendRefs:
+    - name: thehangingpen-server
+      port: 80
