@@ -31,8 +31,9 @@ Good Luck.
 
 ## install/enable WSL2
 1. Follow the manual installation steps: https://docs.microsoft.com/en-us/windows/wsl/install-win10#manual-installation-steps
-### install a (Ubuntu) linux image
-2. Install a linux image from the Windows Store, this assumes you are using ubuntu.
+
+### install a (Ubuntu) linux image (if `wsl --install` didn't install one for you)
+1. Install a linux image from the Windows Store, this assumes you are using ubuntu.
    1. actually open ubuntu once installed
    1. when prompted for username/password, use your username, you do not need to use the same host login password, this is not sync'ed to the host OS so set it to something easy for you remember
    1. **IF YOU WISH TO MOVE THE DISTRO TO A DIFFERENT DRIVE I SUGGEST YOU DO IT NOW**
@@ -186,7 +187,7 @@ for more information see:
    microk8s enable dns storage registry
    ```
    1. You may choose to also add `ingress` to the list to enable microk8s' built ingress, but I strongly recommend using a gateway instead. 
-      1. ingress used by microk8s is nginx, to use ha-proxy, please see steps below on deploying ha proxy to the cluster.
+   1. ingress used by microk8s is nginx, to use ha-proxy, please see steps below on deploying ha proxy to the cluster.
       1. gateway instructions are below under `Configure any needed objects`
 5. adding a loadbalancer
     1. if on microk8s >= 1.17 you can also enable metallb, otherwise we have to manually install it.
@@ -217,7 +218,7 @@ for more information see:
           3. so set the range to something like: 172.21.16.175-172.21.16.225
 6. microk8s is up, running, and configured.
 7. Setup local kubeconfig: run `/usr/local/bin/k8s_ubuntu_wsl/microk8s/microk8s_kubeconfig.sh`
-    1. this edits the ~/.bashrc file so that `microk8s config > ~/.kube/config` is run everytime to make sure it is up to date.
+    1. this edits the ~/.bashrc file so that `microk8s config > ~/.kube/config` is run everytime to make sure it is up to date. 
 8. **Close and restart the session**
 9. Continue with installing `Kubectl and Helm`.
 ## Kubectl and Helm and nfs
