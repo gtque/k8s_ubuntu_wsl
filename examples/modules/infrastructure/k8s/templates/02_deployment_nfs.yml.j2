@@ -1,11 +1,11 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nfs-client-provisioner
+  name: {{ app.infrastructure.name }}-nfs-client-provisioner
   labels:
-    app: nfs-client-provisioner
+    app: {{ app.infrastructure.name }}-nfs-client-provisioner
   # this is the namespace the provisioner is deployed to.
-  namespace: thehangingpen
+  namespace: {{ app.infrastructure.name }}
 spec:
   replicas: 1
   strategy:
@@ -28,13 +28,13 @@ spec:
           env:
             #the provisioner name to use for the provisioner.
             - name: PROVISIONER_NAME
-              value: games-root-provisioner
+              value: {{ app.nfs.name }}-root-provisioner
             - name: NFS_SERVER
               value: localhost
             - name: NFS_PATH
-              value: /games
+              value: /{{ app.nfs.path }}
       volumes:
         - name: nfs-client-root
           nfs:
             server: localhost
-            path: /games
+            path: /{{ app.nfs.path }}

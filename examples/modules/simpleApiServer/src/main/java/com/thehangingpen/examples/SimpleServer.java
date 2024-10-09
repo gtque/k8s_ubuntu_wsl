@@ -24,4 +24,3 @@ public class SimpleServer {
         ApplicationContext ctx = SpringApplication.run(SimpleServer.class, args);
     }
 }
-

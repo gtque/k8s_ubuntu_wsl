@@ -4,8 +4,8 @@ set -euo pipefail
 echo "running ansible templating..."
 #for more verbose ansible output add: -vvvvv
 export _MODULE_DIR=$(pwd)
-echo "ansible-playbook $_WORKING_DIR/modules/render/ansible/site.yml -i hosts -e \"template_output_dir=$TEMPLATE_DIR\" -e \"template_input_dir=$_MODULE_DIR/k8s/templates\" -e @$_config -e \"playbook_operations=render\" -D"
-ansible-playbook $_WORKING_DIR/modules/render/ansible/site.yml -i hosts -e "template_output_dir=$TEMPLATE_DIR" -e "template_input_dir=$_MODULE_DIR/k8s/templates" -e @$_config -e "playbook_operations=render" -D
+echo "ansible-playbook $_WORKING_DIR/render/ansible/site.yml -i hosts -e \"template_output_dir=$TEMPLATE_DIR\" -e \"template_input_dir=$_MODULE_DIR/k8s/templates\" -e @$_config -e \"playbook_operations=render\" -D"
+ansible-playbook $_WORKING_DIR/render/ansible/site.yml -i hosts -e "template_output_dir=$TEMPLATE_DIR" -e "template_input_dir=$_MODULE_DIR/k8s/templates" -e @$_config -e "playbook_operations=render" -D
 sleep 1
 
 FILES_TEMPLATE_DIR=$_WORKING_DIR/$_module/k8s/templates/scripts
@@ -17,7 +17,7 @@ if [ -d $FILES_TEMPLATE_DIR ]; then
   for fname in $config_files
   do
     echo "processing: $fname"
-    ansible-playbook $_WORKING_DIR/modules/render/ansible/site.yml -i hosts -e "template_output_dir=$TEMPLATE_DIR" -e "template_input_dir=$fname" -e @$_config -e "playbook_operations=render" -D
+    ansible-playbook $_WORKING_DIR/render/ansible/site.yml -i hosts -e "template_output_dir=$TEMPLATE_DIR" -e "template_input_dir=$fname" -e @$_config -e "playbook_operations=render" -D
     config_maps="$fname/*.j2"
     script_files="$fname/*.sh"
     for config_map in $config_maps

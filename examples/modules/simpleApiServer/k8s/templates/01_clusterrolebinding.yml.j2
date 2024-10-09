@@ -1,21 +1,21 @@
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: "thehangingpen-server"
-  namespace: "thehangingpen"
+  name: "{{ app.simpleApiServer.name }}-server"
+  namespace: "{{ app.simpleApiServer.namespace }}"
   labels:
-    app.kubernetes.io/name: "thehangingpen-server"
-    app.kubernetes.io/managed-by: "thehangingpen"
+    app.kubernetes.io/name: "{{ app.simpleApiServer.name }}-server"
+    app.kubernetes.io/managed-by: "{{ app.simpleApiServer.name }}"
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/component: "server"
-    app.kubernetes.io/part-of: "thehangingpen"
+    app.kubernetes.io/part-of: "{{ app.simpleApiServer.name }}"
 roleRef:
   apiGroup: ""
   kind: ClusterRole
-  name: "thehangingpen-server"
+  name: "{{ app.simpleApiServer.name }}-server"
 subjects:
 - kind: ServiceAccount
-  name: "thehangingpen-server"
-  namespace: "thehangingpen"
+  name: "{{ app.simpleApiServer.name }}-server"
+  namespace: "{{ app.simpleApiServer.namespace }}"
   apiGroup: ""
 

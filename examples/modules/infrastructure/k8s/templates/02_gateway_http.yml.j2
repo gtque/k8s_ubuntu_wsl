@@ -1,8 +1,8 @@
 apiVersion: gateway.networking.k8s.io/v1beta1
 kind: Gateway
 metadata:
-  name: thehangingpen
-  namespace: thehangingpen
+  name: {{ app.infrastructure.name }}
+  namespace: {{ app.infrastructure.name }}
 spec:
   gatewayClassName: contour
   listeners:
@@ -12,9 +12,8 @@ spec:
     allowedRoutes:
       kinds:
       - kind: HTTPRoute
-  - name: client
-    protocol: TCP
-    port: 25566
-    allowedRoutes:
-      kinds:
-      - kind: TCPRoute
+      namespaces:
+        from: Selector
+        selector:
+          matchLabels:
+            shared-gateway-access: "true"

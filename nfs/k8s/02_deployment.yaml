@@ -31,9 +31,9 @@ spec:
             - name: NFS_SERVER
               value: localhost
             - name: NFS_PATH
-              value: /ftp
+              value: /nfs
       volumes:
         - name: nfs-client-root
           nfs:
             server: localhost
-            path: /ftp
+            path: /nfs

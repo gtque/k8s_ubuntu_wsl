@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ app.simpleApiServer.namespace }}
+  labels:
+    kubernetes.io/metadata.name: "{{ app.simpleApiServer.namespace }}"
+    shared-gateway-access: "true"

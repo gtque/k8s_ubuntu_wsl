@@ -1,0 +1,10 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  #this storageclass should only ever be used as part of the init containers/jobs as it mounts the full nfs root.
+  name: {{ app.nfs.name }}-root-nfs-storage
+provisioner: {{ app.nfs.name }}-root-provisioner # or choose another name, must match deployment's env PROVISIONER_NAME', see 02_deployment_nfs
+parameters:
+  pathPattern: ""
+  archiveOnDelete: "false"
+reclaimPolicy: Retain

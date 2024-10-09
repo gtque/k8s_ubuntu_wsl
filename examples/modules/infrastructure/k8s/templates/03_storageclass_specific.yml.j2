@@ -1,0 +1,11 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  #this storageclass is used to mount a specific path, in this case identified by the PVC's namespace and a custom label called examples.io/nfs
+  #using PVCs are covered in a separate example (or will be once I add it)
+  name: {{ app.nfs.name }}-specific-nfs-storage
+provisioner: {{ app.nfs.name }}-root-provisioner # or choose another name, must match deployment's env PROVISIONER_NAME', see 02_deployment_nfs
+parameters:
+  pathPattern: "${.PVC.namespace}/${.PVC.labels.examples.io/nfs}"
+  archiveOnDelete: "false"
+reclaimPolicy: Retain

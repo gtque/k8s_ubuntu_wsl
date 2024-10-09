@@ -236,3 +236,4 @@ classes/*
 **/secring.gpg
 **/rendered
 **/deprecated
+**/config-gtque.yml

@@ -57,7 +57,7 @@ fi
 
 if [ "$SKIP_TEMPLATE" == "false" ]; then
   echo "rendering templates"
-  source $_WORKING_DIR/modules/render/${deploy_action}.sh
+  source $_WORKING_DIR/render/${deploy_action}.sh
 else
   echo "skipping template rendering"
 fi
@@ -73,7 +73,7 @@ fi
 
 if [ "$SKIP_STANDARD" == "false" ]; then
   echo "running standard setup."
-  source $_WORKING_DIR/modules/k8s/${deploy_action}/deploy.sh
+  source $_WORKING_DIR/render/k8s/${deploy_action}/deploy.sh
 else
   echo "skipping standard $deploy_action"
 fi

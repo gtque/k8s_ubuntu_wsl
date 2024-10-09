@@ -1,4 +1,16 @@
-user:
+app:
   id: examples
+  infrastructure:
+    name: examples
+  nfs:
+    name: example
+    path: examples
+  simpleApiServer:
+    name: simpleapiserver
+    namespace: examples
+    image: localhost:32000/example-server:local
+    url:
+      1: simpleapiserver.local
+      2: www.simpleapiserver.local
 release:
   stage: dev

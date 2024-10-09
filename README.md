@@ -47,15 +47,10 @@ Good Luck.
        1. reset default user if need be:   
           ```
           cd %userprofile%\AppData\Local\Microsoft\WindowsApps            **(this is not needed if in path)**
-          ubuntu2404.exe config --default-user yourloginname`
+          ubuntu2404.exe config --default-user yourloginname              **this should be for the distro you are created, ie ubuntu2204, ubuntu2102, etc...
           ```
       1. Launch/re-open the distro
-3. Create a symbolic link to this project in the `/usr/local/bin` called k8s_ubuntu_wsl
-   1. make sure to replace `[path/to/cloned]` with the path to where ever you cloned this project
-   ```
-   sudo ln -s /mnt/c/[path/to/cloned]/k8s_ubuntu_wsl /usr/local/bin/k8s_ubuntu_wsl
-   ```
-4. Edit the sudoers to remove the password request
+3. Edit the sudoers to remove the password request. *NOTE: THIS IS A BIG SECURITY RISK. ONLY DO THIS IF YOU ARE LAZY AND UNDERSTAND THE RISKS. OR DO IT ANYWAYS. I AM NOT YOUR BOSS*
     ```
    sudo visudo
    ```
@@ -64,6 +59,11 @@ Good Luck.
         %sudo   ALL=(ALL:ALL) NOPASSWD: ALL
        ```
    1. press `ctrl+o` to save and then enter to actually save, then `ctrl+x` to exit, if prompted press `y` to save
+4. Create a symbolic link to this project in the `/usr/local/bin` called k8s_ubuntu_wsl
+   1. make sure to replace `[path/to/cloned]` with the path to where ever you cloned this project
+   ```
+   sudo ln -s /mnt/c/[path/to/cloned]/k8s_ubuntu_wsl /usr/local/bin/k8s_ubuntu_wsl
+   ```
 5. To save some grief:
    1. create symbolic links to your maven, gradle, aws and any other local configurations in the home directory of the user in use in the linux image installed.
       ```
@@ -92,7 +92,7 @@ Good Luck.
       press wq
       press enter to save and close
       ```
-8. close the terminal session and start a new one
+   6. close the terminal session and start a new one
 ## Setting up the required and helpful utilities
 1. run `/usr/local/bin/k8s_ubuntu_wsl/tools/tool_config.sh`
    1. this installs: maven, net-tools, ansible, jq, yq, unzip, libjson-xs-perl, libxml-compile-perl, unzip, awscliv2
@@ -111,7 +111,7 @@ Good Luck.
       3. run: `wsl --shutdown`
       4. open new Ubuntu/linux terminal
    1. this will also install: apt-transport-https, ca-certificates, curl, software-properties-common
-   1. enable buildkit
+   1. if installing a version pre 23.0 then you need to enable buildkit
       1. you may have to sudo mkdir /etc/docker 
       2. edit /etc/docker/daemon.json and add: { "features": { "buildkit": true } }
          1. sudo vi /etc/docker/daemon.json
@@ -159,6 +159,7 @@ for more information see:
 2. **exit and restart system (close the terminal window, open powershell and run wsl --shutdown)**
 ## install microk8s
 1. install microk8s by running: `/usr/local/bin/k8s_ubuntu_wsl/microk8s/microk8s_setup.sh`
+   1. This sets the channel to `latest/stable`
 2. **Close/exit this session and start a new one (close the window/terminal)**
 3. Run the status command (you may have to wait and try a few times while microk8s starts up)
     ```
@@ -223,20 +224,44 @@ for more information see:
     1. this edits the ~/.bashrc file so that `microk8s config > ~/.kube/config` is run everytime to make sure it is up to date. 
 8. **Close and restart the session**
 9. Continue with installing `Kubectl and Helm`.
+#### Microk8s Cluster Cert
+1. Once a year, or whenever you noticed they have expired, you will need to refresh the certs for micro k8s: https://microk8s.io/docs/command-reference#heading--microk8s-refresh-certs
+2. run `/usr/local/bin/k8s_ubuntu_wsl/microk8s/microk8s_cert_refresh.sh`
+   1. this runs the following commands:
+   ```
+   sudo microk8s refresh-certs -e server.crt
+   sudo microk8s refresh-certs -e front-proxy-client.crt
+   sudo snap restart microk8s
+   ```
+
 ## Kubectl and Helm and nfs
 1. for ubuntu 18, 20, and 22 run `/usr/local/bin/k8s_ubuntu_wsl/tools/kubectl_and_helm.sh`
 2. for ubuntu 24 run `/usr/local/bin/k8s_ubuntu_wsl/tools/kubectl_and_helm_jammy.sh`
-3. setup nfs run: `/usr/local/bin/k8s_ubuntu_wsl/ubuntu/nfs/setup.sh`
+3. run `kubectl version` to check the version of kubectl and the running cluster
+4. setup nfs run: `/usr/local/bin/k8s_ubuntu_wsl/ubuntu/nfs/setup.sh`
+   1. you can specify a space separated list of nfs directories to create, others a default directory called `/nfs` will be created
 ## configure any needed objects
 A few extra services need to be running in the kubernetes cluster to be more useful: cert-manager, kubernetes-replicator, secrets, ingress if not using the one provided by microk8s
-1. run `/usr/local/bin/k8s_ubuntu_wsl/infrastructure/setup.sh`
+1. add a cert provisioner
+   1. run `/usr/local/bin/k8s_ubuntu_wsl/infrastructure/setup.sh`
+   1. this adds the jetstack certmanager, currently v1.4.0
+   1. You may want to double-check the version first and check for a newer version. Be careful though, and test it thoroughly before committing a change to the `k8s_setup.sh` updating the cert-manager version.
+   1. It creates a namespace called `infrastructure` and a basic cert called `local-dev-tls`
    1. this does not install ingress, see the ingress section below if you want to use ha proxy instead of the nginx ingress provided by microk8s
-   2. You may want to double-check the version first and check for a newer version. Be careful though, and test it thoroughly before committing a change to the `k8s_setup.sh` updating the cert-manager version.
 2. install contour gateway
    1. run `/usr/local/bin/k8s_ubuntu_wsl/infrastructure/optional/contour/setup.sh`
    2. This is under optional, because while I strongly encourage moving to using a gateway instead of ingress,
    it is up to you to decide which implementation you want to use, this is just what I have been using and is what the examples are using,
    but setup for nginx-gateway are also provided if you want to go down that path.
+   3. If you plan to route to any services running in kubernetes from outside the host Windows OS, you will need to set up portforwarding.
+   4. Yes, Windows and wsl default to localhost/loopback forwarding to wsl, but the gateway is not bound to that address, so you will have to specifically portforward to the gateway address.
+   5. This means will be port limited by the host Windows OS, so for http to route to the default 80/443 ports, you should use the same gateway
+   for routing all the http traffic. This does mean you can only route to one gateway in a single wsl distro at a time, so all you crazy people running
+   multiple distros on the same machine will have to edit your netsh portforwarding rules as needed.
+   6. You will first need to get the gateway address: `kubectl -n <namespace> get gateway`
+   7. Then define the rule using netsh: `netsh interface portproxy add v4tov4 listenport=80 listenaddress=0.0.0.0 connectport=80 connectaddress=192.168.160.23`
+   8. Repeat for any additional gateways and/or ports you want to access from your LAN.
+   9. This is for non-network admins that don't have a crazy multi-nic setup. If you are one of those network admin peoples, you already know more than me on the subject and don't need my help.
 3. install ha-proxy if you must and if you aren't using the provide nginx ingress from microk8s, just know that it is strongly encouraged to use a gateway instead.
    <details>
    
@@ -273,7 +298,7 @@ A few extra services need to be running in the kubernetes cluster to be more use
 There are no certs installed by the preceding steps. 
 There are several options for certs. 
 The easiest to get started with will be the self signed certs.
-but first:
+but first if you didn't run the cert-provisioner infrastructure step above:
 1. run `/usr/local/bin/k8s_ubuntu_wsl/infrastructure/certs/setup.sh`
 ###### SelfSigned
 The certs are defined for `*.local.dev` and `*.sso.local.dev`. Edit this if you want to use a different base url.
