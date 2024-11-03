@@ -7,8 +7,8 @@
 * `config/local-dev` contains the configuration yaml files used to render the templates
 * `deploy` contains the scripts for rendering and deploying the templates
   * `render` contains the ansible configuration and k8s scripts that render and apply the templates.
-* the rest of the folders are example "types", such as java, k8s, go (not yet implemented), etc...
-  * under each example type there should be a folder called `modules`. This contains the actual example code and files.
+* the rest of the folders are language "types", such as java, k8s, go (not yet implemented), etc...
+  * under each language there should be a folder called `modules`. This contains the actual example code and files.
   * each deployable module under `modules` has a `k8s/templates` directory which contains the necessary scripts and template files for deploying that module.
   * when deployed, the templates will be rendered using ansible into the `k8s/rendered` directory.
 * `java` contains java based application examples
@@ -18,16 +18,16 @@
 * `k8s`
   * `modules` contains kubernetes only templates that do not require any source code to be built and can be deployed directly.
 * All the scripts, setup, deploy, build, teardown, etc..., should be run from this `examples` directory.
-  * `./build.sh` is a highlevel build script wrapper that invokes the example type's build script. For more information on a type's build process, please look for a README file in that type's directory.
-    * to build an example module other than the default simpleApiServer, you should specify `--example [type]` and `--module [name]`
+  * `./build.sh` is a highlevel build script wrapper that invokes the example language's build script. For more information on a language's build process, please look for a README file in that language's directory.
+    * to build an example module other than the default simpleApiServer, you should specify `--language [language]` and `--module [name]`
     * for additional options/parameters run: `./build.sh ?`
-  * `./setup.sh` deploys the specified example type module.
-    * to setup, aka deploy, an example module other than the default infrastructure you should specify `--example [type]` and `--module [name]`
-    * example: `./setup.sh --example java --module simpleApiServer`
+  * `./setup.sh` deploys the specified example language module.
+    * to setup, aka deploy, an example module other than the default infrastructure you should specify `--language [language]` and `--module [name]`
+    * example: `./setup.sh --language java --module simpleApiServer`
     * for additional options/parameters run: `./setup.sh ?`
-  * `./teardown.sh` tears down, aka undeploys, the specified example type module.
-    * to tear down an example module other than the default infrastructure you should specify `--example [type]` and `--module [name]`
-    * example: `./teardown.sh --example java --module simpleApiServer`
+  * `./teardown.sh` tears down, aka undeploys, the specified example language module.
+    * to tear down an example module other than the default infrastructure you should specify `--language [language]` and `--module [name]`
+    * example: `./teardown.sh --language java --module simpleApiServer`
     * for additional options/parameters run: `./teardown.sh ?`
 * **You should start by deploying the infrastructure templates.**
   * `./setup.sh`
