@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ app.simpleApiServer.name }}"
+  namespace: "{{ app.simpleApiServer.namespace }}"
+  labels:
+    app.kubernetes.io/name: "{{ app.simpleApiServer.name }}"
+    app.kubernetes.io/managed-by: "{{ app.simpleApiServer.manager }}"
+    app.kubernetes.io/version: "{{ app.simpleApiServer.version }}"
+    app.kubernetes.io/component: "{{ app.simpleApiServer.name }}"
+    app.kubernetes.io/part-of: "{{ app.simpleApiServer.name }}"
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app.kubernetes.io/name: {{ app.simpleApiServer.name }}

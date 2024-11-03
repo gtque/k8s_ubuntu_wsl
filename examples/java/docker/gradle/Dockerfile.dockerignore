@@ -1,0 +1,9 @@
+**/.idea
+**/.vscode
+**/.git
+**/test-output
+**/local-dev
+**/deploy
+**/docker
+**/gradle/
+**/render

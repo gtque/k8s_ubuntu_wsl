@@ -1,0 +1,19 @@
+app:
+  id: examples
+  infrastructure:
+    name: examples
+    namespace: examples
+  nfs:
+    name: example
+    path: examples
+  simpleApiServer:
+    name: simpleapiserver
+    namespace: examples
+    manager: ansible
+    version: 0.1.17.0-SNAPSHOT
+    image: localhost:32000/example-java-simpleapiserver:local
+    url:
+      1: simpleapiserver.local
+      2: www.simpleapiserver.local
+release:
+  stage: dev

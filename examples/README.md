@@ -4,17 +4,33 @@
   * If you are using the microk8s setup defined in this project, you are good to go, otherwise, you will want to make sure you have a local image repo running and accessible at localhost:32000, or you can manually edit the build.sh scripts to use the expected name.
 * The deployment process leverages ansible to render templates before applying them.
 * The values for the templates are provided by a yaml file defined in the local-dev folder.
+* `config/local-dev` contains the configuration yaml files used to render the templates
 * `deploy` contains the scripts for rendering and deploying the templates
-* `docker` contains the Dockerfile(s) used by the example projects that provide the content to demonstrate something running in kubernetes
-* `gradle` contains the gradle wrapper information
-* `local-dev` contains the configuration yaml files used to render the templates
-* `modules` contain the example deployments including: infrastructure templates and sample projects that can be deployed to kubernetes.
-  * each deployable module has a `k8s/templates` directory which contains the necessary scripts and template files for deploying that module.
+  * `render` contains the ansible configuration and k8s scripts that render and apply the templates.
+* the rest of the folders are example "types", such as java, k8s, go (not yet implemented), etc...
+  * under each example type there should be a folder called `modules`. This contains the actual example code and files.
+  * each deployable module under `modules` has a `k8s/templates` directory which contains the necessary scripts and template files for deploying that module.
   * when deployed, the templates will be rendered using ansible into the `k8s/rendered` directory.
-* `render` contains the ansible confugration and k8s scripts that render and apply the templates. 
-* All the scripts, setup, deploy, build, teardown, etc..., should be run from this `examples` directory.  
+* `java` contains java based application examples
+  * `docker` contains the Dockerfile(s) used by the example projects that provide the content to demonstrate something running in kubernetes
+  * `gradle` contains the gradle wrapper information
+  * `modules` contain the example deployments including: infrastructure templates and sample projects that can be deployed to kubernetes.
+* `k8s`
+  * `modules` contains kubernetes only templates that do not require any source code to be built and can be deployed directly.
+* All the scripts, setup, deploy, build, teardown, etc..., should be run from this `examples` directory.
+  * `./build.sh` is a highlevel build script wrapper that invokes the example type's build script. For more information on a type's build process, please look for a README file in that type's directory.
+    * to build an example module other than the default simpleApiServer, you should specify `--example [type]` and `--module [name]`
+    * for additional options/parameters run: `./build.sh ?`
+  * `./setup.sh` deploys the specified example type module.
+    * to setup, aka deploy, an example module other than the default infrastructure you should specify `--example [type]` and `--module [name]`
+    * example: `./setup.sh --example java --module simpleApiServer`
+    * for additional options/parameters run: `./setup.sh ?`
+  * `./teardown.sh` tears down, aka undeploys, the specified example type module.
+    * to tear down an example module other than the default infrastructure you should specify `--example [type]` and `--module [name]`
+    * example: `./teardown.sh --example java --module simpleApiServer`
+    * for additional options/parameters run: `./teardown.sh ?`
 * **You should start by deploying the infrastructure templates.**
-  * `./deploy/setup.sh`
+  * `./setup.sh`
     * for more information on additional parameters for setup, please run: `./deploy/setup.sh ?`
     * after running, if you want to access anything from your LAN, ie outside of the host Windows OS, you will need to configure the port forwarding.
     * the infrastructure gateway, currently, exposes port 80 to be used by httproutes.
@@ -23,12 +39,6 @@
     * if you need to change the portforwarding for a particular port and have already set it before, you will want to delete the rule(s) for the port first.
       * `netsh interface portproxy delete v4tov4 listenport=80 listenaddress=0.0.0.0` 
   * see the readme in `modules/infrastructure` for more information.
-* a build.sh script is provided for building the specific example projects and publishing an image, which is required for running them in kubernetes.
-  * each module that compiles and/or packages source code into an image will have its own build.sh file as well.
-  * please take a look at those scripts if you are more curious about how they are actually built, but not much explaination will be given since those are not the point of this project.
-  * modules with only kubernetes templates will not have a build.sh script.
-  * to build a specific module, from the `examples` directory, run `./build.sh <module-name>`
-    * example: `./build.sh simpleApiServer`
-* The kubernetes templates are defined in the modules `k8s/templates` folder.
-* The rendered templates are created in the modules `k8s/rendered` folder.
-* debug is enabled by default, so you can take a look at the rendered templates in the `rendered` folder(s)
+* **REMINDER: _The kubernetes templates are defined in the module's `k8s/templates` folder._**
+* **REMINDER: _The rendered templates are created in the module's `k8s/rendered` folder._**
+* **debug is enabled by default, so you can take a look at the rendered templates in the `rendered` folder(s)**

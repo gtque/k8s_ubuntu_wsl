@@ -1,0 +1,25 @@
+Closure discoverModules = {
+    def list = []
+    rootDir.eachDir() { d ->
+        if(d.name.equals("modules")){
+            d.eachDir() { mod ->
+                mod.eachFileMatch({ it == mod.name+'.gradle' }, {list += [mod.name]})
+            }
+        }
+    }
+    list.toArray(new java.lang.String[0])
+}
+def modules = discoverModules()
+
+Closure setProjectFolders = {
+	modules.each { m ->
+        System.out.println("checking module: " + m);
+		if(!m.equals("examples")&&!m.equals("java")){ //this needs to be changed when the project is renamed...
+		project(":"+m).projectDir = file("modules/"+m)
+        	project(":"+m).buildFileName = m+".gradle"
+		}
+	}
+}
+
+include modules
+setProjectFolders()

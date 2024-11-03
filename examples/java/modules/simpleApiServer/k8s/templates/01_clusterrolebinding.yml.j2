@@ -1,0 +1,20 @@
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: "{{ app.simpleApiServer.name }}"
+  namespace: "{{ app.simpleApiServer.namespace }}"
+  labels:
+    app.kubernetes.io/name: "{{ app.simpleApiServer.name }}"
+    app.kubernetes.io/managed-by: "{{ app.simpleApiServer.manager }}"
+    app.kubernetes.io/version: "{{ app.simpleApiServer.version }}"
+    app.kubernetes.io/component: "{{ app.simpleApiServer.name }}"
+    app.kubernetes.io/part-of: "{{ app.simpleApiServer.name }}"
+roleRef:
+  apiGroup: ""
+  kind: ClusterRole
+  name: "{{ app.simpleApiServer.name }}"
+subjects:
+- kind: ServiceAccount
+  name: "{{ app.simpleApiServer.name }}"
+  namespace: "{{ app.simpleApiServer.namespace }}"
+  apiGroup: ""

@@ -1,0 +1,339 @@
+/*
+ * Copyright (c) 2017. Eric Angeli
+ *
+ *  Permission is hereby granted, free of charge,
+ *  to any person obtaining a copy of this software
+ *  and associated documentation files (the "Software"),
+ *  to deal in the Software without restriction,
+ *  including without limitation the rights to use, copy,
+ *  modify, merge, publish, distribute, sublicense,
+ *  and/or sell copies of the Software, and to permit
+ *  persons to whom the Software is furnished to do so,
+ *  subject to the following conditions:
+ *
+ *  The above copyright notice and this permission
+ *  notice shall be included in all copies or substantial
+ *  portions of the Software.
+ *
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ *  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ *  WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
+ *  AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ *  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ *  DEALINGS IN THE SOFTWARE.
+ */
+import java.text.SimpleDateFormat
+import java.util.concurrent.TimeUnit
+import com.thegoate.gradle.GoateGradleHelper
+buildscript {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+        mavenLocal()
+    }
+    dependencies {
+//        classpath 'com.sourcemuse.gradle.plugin:gradle-mongo-plugin:0.13.0'
+//        classpath 'gradle.plugin.com.github.johnrengelman:shadow:7.1.2'
+        classpath "com.github.ben-manes:gradle-versions-plugin:0.43.0"
+        classpath 'com.thegoate:gradle:0.15.8.202104300242'
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:3.2.0"
+        classpath("io.spring.gradle:dependency-management-plugin:1.1.4")
+    }
+}
+
+//apply plugin: 'mongo'
+//
+//mongo {
+//    port 27017
+//    storageLocation "mongo"
+//}
+
+//-Dorg.gradle.java.home=<path to jdk>
+SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
+def maxJV = "17";//this should be updated when a new version of java is supported.
+String javaVersion = "" + Integer.parseInt(project.hasProperty("javaVersion") ? (project.javaVersion.isEmpty() ? maxJV : project.javaVersion) : maxJV)
+if (javaVersion.contains(".")) {
+    javaVersion = javaVersion.substring(("" + javaVersion).indexOf(".") + 1);
+}
+
+def majorVersion = 0
+def minorVersion = 1
+def vbase = "${majorVersion}.${minorVersion}.${javaVersion}"
+def buildDate = "" + (project.hasProperty("buildDate")?project.buildDate:sdf.format(new Date()))
+def v = "${vbase}." + (project.hasProperty("release") ? (project.release.equals("final") | project.release.equals("release") ? buildDate : '0'):'0')
+def release = project.hasProperty("release") ? (project.release.equals("final") | project.release.equals("release") ? '' : ('-'+project.release)) : '-SNAPSHOT'
+def isNonStable = { String version ->
+    def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase().contains(it) }
+    def regex = /^[0-9,.v-]+(-r)?$/
+    return !stableKeyword && !(version ==~ regex)
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+    apply plugin: 'idea'
+    apply plugin: 'maven-publish'
+    //apply plugin: 'signing'
+    apply plugin: 'jacoco'
+    apply plugin: "com.github.ben-manes.versions"
+    apply plugin: "org.springframework.boot"
+    apply plugin: "io.spring.dependency-management"
+
+    version = v + release;
+    group = "com.thegoate.examples"
+    configurations {
+    }
+    dependencies{
+    }
+
+    dependencyUpdates {
+        rejectVersionIf {
+            isNonStable(it.candidate.version)
+        }
+    }
+}
+
+configurations.all {
+    resolutionStrategy {
+        cacheDynamicVersionsFor 5, TimeUnit.SECONDS
+    }
+}
+
+wrapper {
+    gradleVersion = '8.5' //version required
+}
+
+subprojects {
+    configurations {
+        annotations;
+    }
+    boolean oneOff = project.hasProperty("oneOff")
+    def projectJavaLabel = project.hasProperty("projectJavaLabel")?project.projectJavaLabel:"false"
+    def projectName = "${project.name}" + (Boolean.parseBoolean(""+projectJavaLabel)?javaVersion:"")
+    projectName = projectName.replace(":", "").replace("module", "")
+    apply plugin: 'java'
+    apply plugin: 'java-library'
+    apply plugin: 'groovy'
+    apply plugin: 'jacoco'
+    apply plugin: 'goate.test'
+//    apply plugin: 'com.github.johnrengelman.shadow'
+    //apply plugin: 'application'
+
+    project.ext.set("internalVersion", vbase);
+    project.ext.set("javaVersion", Integer.parseInt(javaVersion));
+    project.ext.set("maxJV", maxJV);
+    project.ext.set("fullName", projectName);
+    //mainClassName = project.hasProperty("main") ? project.main : ''
+    idea {
+        module {
+            name = "${project.name}"
+        }
+    }
+
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    dependencies {
+        testImplementation 'ch.qos.logback:logback-classic:1.2.11'
+        testImplementation 'ch.qos.logback:logback-access:1.2.11'
+        testImplementation 'ch.qos.logback:logback-core:1.2.11'
+        testImplementation 'org.codehaus.janino:janino:3.1.8'
+        annotationProcessor 'org.atteo.classindex:classindex:3.11'
+        testAnnotationProcessor 'org.atteo.classindex:classindex:3.11'
+    }
+
+    jar.archiveBaseName = projectName
+
+    sourceSets {
+        test {
+            resources { srcDirs "cucumbers" } //only needed for cucumbers
+        }
+    }
+    jacoco {
+        toolVersion = "0.8.5"//"0.7.6.201602180812"
+    }
+    configurations.all {
+        resolutionStrategy.force 'xml-apis:xml-apis:1.4.01'
+        exclude group: 'd-haven-managed-pool', module: 'd-haven-managed-pool'
+        exclude group: 'event', module: 'event'
+        exclude group: 'commons-math3', module: 'commons-math3'
+        exclude group: 'commons-pool2', module: 'commons-pool2'
+    }
+
+    def siteUrl = 'http://www.thehangingpen.com'
+    def gitUrl = 'https://github.com/gtque/thehangingpen'
+
+    java {
+        withJavadocJar()
+        withSourcesJar()
+    }
+    publishing {
+        publications {
+            java(MavenPublication) {
+                from components.java
+                groupId "com.thegoate.examples"
+                artifactId projectName
+//                artifact artifacts
+                pom {
+                    description = 'thehangingpen module for ' + projectName
+                    name = projectName
+                    url = siteUrl
+                    licenses {
+                        license {
+                            name = 'MIT'
+                            url = 'http://www.thehangingpen.com/licenses/LICENSE-MIT.txt'
+                        }
+                    }
+                    developers {
+                        developer{
+                            id = 'gtque'
+                            name = 'Eric Angeli'
+                        }
+                    }
+                    scm {
+                        url = gitUrl
+                    }
+                }
+                GoateGradleHelper.customPom(pom, configurations, project.javaVersion, true)
+            }
+        }
+        model {
+            tasks.generatePomFileForJavaPublication() {
+                destination = file("$buildDir/${projectName}-${version}.pom")
+            }
+        }
+        repositories {
+            maven {
+                // change URLs to point to your repos, e.g. http://my.org/repo
+                def releasesRepoUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+                def snapshotsRepoUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+                authentication {
+                    basic(BasicAuthentication){
+                        credentials {
+                            username = ossrhUsername
+                            password = ossrhPassword
+                        }
+                    }
+                }
+            }
+        }
+    }
+    idea {
+        module {
+            scopes.PROVIDED.plus += [configurations.annotations]
+        }
+    }
+
+    task jarTest(type: Jar) {
+        archiveClassifier.set("tests")
+        from sourceSets.test.output, sourceSets.main.output
+    }
+
+    task allsourcesJar(type: Jar) {
+        from sourceSets.main.allSource
+        archiveClassifier.set('sources')
+        archiveBaseName.set("${projectName}")
+    }
+
+    task alljavadocJar(type: Jar, dependsOn: javadoc) {
+        archiveClassifier.set('jdoc')
+        from javadoc.destinationDir
+        archiveBaseName.set("${projectName}")
+    }
+    task groovydocJar(type: Jar, dependsOn: groovydoc) {
+        archiveClassifier.set('gdoc')
+        from groovydoc.destinationDir
+        archiveBaseName.set("${projectName}")
+    }
+
+    javadocJar{
+        dependsOn alljavadocJar,groovydocJar
+        archiveClassifier.set('javadoc')
+        from groovydocJar.archiveFile,alljavadocJar.archiveFile
+        archiveBaseName.set("${projectName}")
+    }
+
+    task copyAllDependencies(type: Copy) {
+        from configurations.compileClasspath
+        into "${buildDir}/libs"
+    }
+
+//    signing {
+//        sign configurations.archives
+//        sign publishing.publications.thehangingpen
+//    }
+}
+
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+// get class dirs for project dependencies
+FileCollection getJacocoClassDirs() {
+    Set srcDirs = subprojects.sourceSets.main.output
+    return files(srcDirs)
+}
+
+FileCollection getJacocoExecFiles() {
+    Set srcDirs = subprojects.jacocoTestReport.executionData
+    Iterator it = srcDirs.iterator()
+    while (it.hasNext()) {
+        FileCollection fc = it.next()
+        for (File f : fc.files) {
+            if (f.exists()) {
+                System.out.println(f.absolutePath)
+            } else {
+                it.remove()
+                System.out.println("\tremoving: " + f.absolutePath)
+            }
+        }
+    }
+    return files(srcDirs)
+}
+
+// get source dirs for project dependencies
+FileCollection getJacocoSrcDirs() {
+    Set srcDirs = subprojects.sourceSets.main.allSource.srcDirs
+    return files(srcDirs)
+}
+
+//task jacocoMerge(type: JacocoMerge) {
+//    executionData = getJacocoExecFiles()
+//    destinationFile = project.file("$buildDir/jacoco/data/jacoco.exec")
+//}
+
+// generate coverage report for this project and all its project dependencies
+task jacocoMergedReport(type: JacocoReport) {
+//    dependsOn jacocoMerge
+//    System.out.println("merged execs: " + jacocoMerge.destinationFile);
+    executionData = getJacocoExecFiles()
+    reports {
+        xml.required = false
+        csv.required = false
+        html.destination file("$buildDir/reports/jacoco")
+    }
+
+    classDirectories.from = files(getJacocoClassDirs().collect {
+        fileTree(dir: it, exclude: ['com/**/gradle/**','com/**/performance/**','com/**/barn/idea/**'])
+    })
+    sourceDirectories.from = getJacocoSrcDirs()
+}
+
+task testReport(type: TestReport) {
+    if(project.hasProperty("testReport")) {
+        subprojects {
+            plugins.withType(JavaPlugin) {
+                test {
+                    ignoreFailures true
+                }
+            }
+        }
+    }
+    destinationDir = file("$buildDir/reports/allTests")
+    // Include the results from the `test` task in all subprojects
+    reportOn subprojects*.test
+}

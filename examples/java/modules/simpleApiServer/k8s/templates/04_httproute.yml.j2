@@ -1,0 +1,27 @@
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: HTTPRoute
+metadata:
+  name: {{ app.simpleApiServer.name }}
+  namespace: {{ app.simpleApiServer.namespace }}
+  labels:
+    app.kubernetes.io/name: "{{ app.simpleApiServer.name }}"
+    app.kubernetes.io/instance: "{{ app.simpleApiServer.name }}"
+    app.kubernetes.io/managed-by: "{{ app.simpleApiServer.manager }}"
+    app.kubernetes.io/version: "{{ app.simpleApiServer.version }}"
+    app.kubernetes.io/component: "{{ app.simpleApiServer.name }}"
+    app.kubernetes.io/part-of: "{{ app.simpleApiServer.name }}"
+spec:
+  parentRefs:
+  - name: {{ app.infrastructure.name }}
+    namespace : {{ app.infrastructure.name }}
+  hostnames:
+  - "{{ app.simpleApiServer.url.1 }}"
+  - "{{ app.simpleApiServer.url.2 }}"
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+  - backendRefs:
+    - name: {{ app.simpleApiServer.name }}
+      port: 80
