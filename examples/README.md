@@ -6,7 +6,10 @@
 * The values for the templates are provided by a yaml file defined in the local-dev folder.
 * `config/local-dev` contains the configuration yaml files used to render the templates
 * `deploy` contains the scripts for rendering and deploying the templates
-  * `render` contains the ansible configuration and k8s scripts that render and apply the templates.
+  * `render` contains the ansible configuration and scripts that render and the templates.
+  * `k8s` contains additional kubernetes template management for documenting the tear down process for the deployment and rendering scripts into configmaps.
+    * It also does a server side apply of the rendered templates.
+    * Templates starting with `00_` are always applied first. If you have anything that needs to exist first, like namespace, it should be part of the `00_` templates.
 * the rest of the folders are language "types", such as java, k8s, go (not yet implemented), etc...
   * under each language there should be a folder called `modules`. This contains the actual example code and files.
   * each deployable module under `modules` has a `k8s/templates` directory which contains the necessary scripts and template files for deploying that module.
