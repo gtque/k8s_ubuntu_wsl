@@ -13,7 +13,8 @@ sudo apt install -y jq
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys CC86BB64
 sudo add-apt-repository ppa:rmescandon/yq
 sudo apt update
-sudo apt install -y yq
+sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq
+sudo chmod +x /usr/local/bin/yq
 sudo apt install -y libjson-xs-perl
 sudo apt install -y libxml-compile-perl
 sudo apt install -y unzip

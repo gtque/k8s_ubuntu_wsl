@@ -77,13 +77,7 @@ Good Luck.
    1. from power shell run: ipconfig /all 
    2. look for the entry for the VPN Client 
    3. copy the dns servers' ip addresses (may be 2)
-   4. in your linux (aka ubuntu) instance in wsl edit /etc/resolv.conf  and add the dns server ip addresses to the top of the list.
-      1. should be something like:
-      ```
-      nameserver XX.XXX.X.X
-      nameserver XX.XXX.X.X
-      ```
-   5. edit /etc/wsl.conf and set `generateResolvConf = false`
+   4. edit /etc/wsl.conf and set `generateResolvConf = false`
       ```
       sudo vi /etc/wsl.conf
       press i
@@ -92,7 +86,21 @@ Good Luck.
       press wq
       press enter to save and close
       ```
-   6. close the terminal session and start a new one
+   5. you may need to delete the existing /etc/resolv.conf file
+      ```
+      sudo rm /etc/resolv.conf
+      ```
+   6. in your linux (aka ubuntu) instance in wsl edit /etc/resolv.conf  and add the dns server ip addresses to the top of the list.
+       1. should be something like:
+      ```
+      nameserver XX.XXX.X.X
+      nameserver XX.XXX.X.X
+      ```
+   7. make it not editable:
+      ```
+      sudo chattr +i /etc/resolv.conf
+      ```
+   8. close the terminal session and start a new one
 ## Setting up the required and helpful utilities
 1. run `/usr/local/bin/k8s_ubuntu_wsl/tools/tool_config.sh`
    1. this installs: maven, net-tools, ansible, jq, yq, unzip, libjson-xs-perl, libxml-compile-perl, unzip, awscliv2
@@ -244,7 +252,7 @@ for more information see:
 A few extra services need to be running in the kubernetes cluster to be more useful: cert-manager, kubernetes-replicator, secrets, ingress if not using the one provided by microk8s
 1. add a cert provisioner
    1. run `/usr/local/bin/k8s_ubuntu_wsl/infrastructure/setup.sh`
-   1. this adds the jetstack certmanager, currently v1.4.0
+   1. this adds the ~~jetstack~~ cert-manager/cert-manager, currently v1.19.0
    1. You may want to double-check the version first and check for a newer version. Be careful though, and test it thoroughly before committing a change to the `k8s_setup.sh` updating the cert-manager version.
    1. It creates a namespace called `infrastructure` and a basic cert called `local-dev-tls`
    1. this does not install ingress, see the ingress section below if you want to use ha proxy instead of the nginx ingress provided by microk8s
